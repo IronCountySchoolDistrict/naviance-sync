@@ -15,21 +15,18 @@ WITH reenrollments_with_current AS (
 )
 SELECT
   students.dcid                                             AS student_id,
-  students.lastfirst                                        AS lastfirst,
   sections.course_number                                    AS course_id,
   reenrollments_with_current.grade_level                    AS grade_level,
   courses.course_name                                       AS course_name,
   teachers.first_name || ' ' || teachers.last_name          AS teacher,
   CASE
-  WHEN pgfinalgrades.startdate <= SYSDATE AND pgfinalgrades.enddate >= SYSDATE
-    THEN 'Completed'
-  ELSE 'In Progress' END                                    AS course_status,
+  WHEN SYSDATE >= pgfinalgrades.startdate AND sysdate <= pgfinalgrades.enddate
+    THEN 'In Progress'
+  ELSE 'Completed' END                                    AS course_status,
   terms.name || ' (' || pgfinalgrades.finalgradename || ')' AS term,
   courses.credit_hours                                      AS credits_earned,
   pgfinalgrades.grade                                       AS letter_grade,
   pgfinalgrades.percent                                     AS number_grade
-
-
 FROM pgfinalgrades
   JOIN sections ON pgfinalgrades.sectionid = sections.id
   JOIN students ON pgfinalgrades.studentid = students.id
@@ -39,5 +36,5 @@ FROM pgfinalgrades
                                      pgfinalgrades.startdate >= reenrollments_with_current.entrydate AND
                                      pgfinalgrades.enddate <= reenrollments_with_current.exitdate
   JOIN teachers ON sections.teacher = teachers.id
-WHERE sections.schoolid IN (704, 708, 712) AND
+WHERE sections.schoolid IN (704, 708, 712, 750) AND
       students.enroll_status = 0
