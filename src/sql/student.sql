@@ -1,12 +1,16 @@
 WITH student_race_ethnicity AS (
     SELECT
-      studentid                                                                                  AS studentid,
+      studentid                            AS studentid,
 
       -- Parse the "White" out of "(W) White", etc.
-      trim(initcap(regexp_substr(psrw_student_race.description, '\(\w\)\s*(.*)', 1, 1, 'i', 1))) AS student_ethnicity
+      -- Use the min() function here with the GROUP BY studentid below to only show one Ethnicity value
+      -- for each student. This will ensure there are no duplicate student records.
+      min(trim(initcap(regexp_substr(psrw_student_race.description, '\(\w\)\s*(.*)', 1, 1, 'i',
+                                     1)))) AS student_ethnicity
     FROM psrw_student_race
     WHERE psrw_student_race.description IS NOT NULL AND
           psrw_student_race.category_description <> '(T) Tribal Affiliation'
+    GROUP BY studentid
 )
 SELECT
   trim(initcap(first_name))           AS first_name,
@@ -44,5 +48,5 @@ WHERE
   -- only include active students
   students.enroll_status = 0 AND
 
-  -- only include students from CHS, CVHS, PHS in sync
-  students.schoolid IN (704, 708, 712)
+  -- only include students from CHS, CVHS, PHS and SEA in sync
+  students.schoolid IN (704, 708, 712, 750)

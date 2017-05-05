@@ -8,6 +8,7 @@ dotenv.load()
 
 def results_to_csv_str(results, cursor):
     csv_results = ''
+    print(cursor.description)
     csv_results += ','.join([column[0] for column in cursor.description])
     csv_results += '\n'
     csv_results += '\n'.join(','.join(str(i) for i in result) for result in results)
@@ -68,4 +69,3 @@ if __name__ == '__main__':
     if args.import_type[0] == 'student_course':
         response = import_course_data(naviance_client)
 
-    print(response.text)

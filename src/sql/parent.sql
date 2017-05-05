@@ -13,4 +13,4 @@ FROM pcas_account
   JOIN students ON guardianstudent.studentsdcid = students.dcid
 WHERE servicename = 'PS Parent Portal' AND
       students.enroll_status = 0 AND
-      schoolid IN (704, 708, 712)
+      schoolid IN (704, 708, 712, 750)
