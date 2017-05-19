@@ -8,10 +8,13 @@ dotenv.load()
 
 def results_to_csv_str(results, cursor):
     csv_results = ''
-    print(cursor.description)
     csv_results += ','.join([column[0] for column in cursor.description])
     csv_results += '\n'
-    csv_results += '\n'.join(','.join(str(i) for i in result) for result in results)
+    csv_results += '\n'.join(
+        # process each column, separate values by comma
+        ','.join(str(i) if i is not None else '' for i in result)
+        # process each row, separate values by \n
+        for result in results)
     return csv_results
 
 def import_students(client):
@@ -33,7 +36,6 @@ def import_parents(client):
     parent_results = cursor.fetchall()
 
     csv_results = results_to_csv_str(parent_results, cursor)
-
     naviance_response = client.import_parents(csv_results)
 
     return naviance_response
@@ -45,7 +47,6 @@ def import_course_data(client):
     course_data_results = cursor.fetchall()
 
     csv_results = results_to_csv_str(course_data_results, cursor)
-
     naviance_response = client.import_student_course(csv_results)
 
     return naviance_response
@@ -68,4 +69,3 @@ if __name__ == '__main__':
         response = import_parents(naviance_client)
     if args.import_type[0] == 'student_course':
         response = import_course_data(naviance_client)
-
