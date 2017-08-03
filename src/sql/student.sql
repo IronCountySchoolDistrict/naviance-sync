@@ -37,7 +37,7 @@ SELECT
   WHEN student_race_ethnicity.student_ethnicity = 'American Indian/Alaska Native'
     THEN 'American Indian/Alaska Native'
   WHEN student_race_ethnicity.student_ethnicity = 'Native Hawaiian/Pacific Islander'
-    THEN 'Pacific Islander/Native Hawaiian'
+    THEN 'Pacific Islander/Native Hawaii'
   WHEN student_race_ethnicity.student_ethnicity = 'Other'
     THEN 'Other' END                  AS ethnicity
 FROM students
@@ -48,5 +48,6 @@ WHERE
   -- only include active students
   students.enroll_status = 0 AND
 
-  -- only include students from CHS, CVHS, PHS and SEA in sync
-  students.schoolid IN (704, 708, 712, 750)
+  -- include students from CHS, CVHS, PHS and SEA in sync with grade level >= 8
+  students.schoolid IN (704, 708, 712, 750, 304, 308) AND
+  students.grade_level >= 8
